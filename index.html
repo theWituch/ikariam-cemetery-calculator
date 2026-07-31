@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Kalkulator przewidywanych terminów nieaktywności, przeniesienia na cmentarz i usunięcia konta z serwera Ikariam."
+    />
+    <meta name="theme-color" content="#173f56" />
+    <title>Ikariam Cemetery — kalkulator cmentarzowania</title>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero__emblem" aria-hidden="true"><span>Ι</span></div>
+        <div>
+          <p class="eyebrow">Narzędzie dowódcy</p>
+          <h1>Ikariam Cemetery</h1>
+          <p class="hero__lead">
+            Sprawdź przewidywany przebieg nieaktywności konta — od ostatniego kliknięcia aż po opuszczenie starego świata.
+          </p>
+        </div>
+        <div class="timezone-badge" title="Wszystkie daty są interpretowane w strefie Europe/Warsaw">
+          <span aria-hidden="true">◷</span>
+          Czas Polski · CET/CEST
+        </div>
+      </header>
+
+      <main>
+        <form id="calculator-form" class="calculator" novalidate>
+          <div class="date-grid">
+            <section class="date-card" aria-labelledby="created-title">
+              <div class="date-card__heading">
+                <span class="step-mark" aria-hidden="true">I</span>
+                <div>
+                  <p class="date-card__kicker">Początek historii</p>
+                  <h2 id="created-title">Początek panowania</h2>
+                </div>
+              </div>
+              <label for="created-at">Data i godzina utworzenia konta</label>
+              <div class="date-input-wrap">
+                <span aria-hidden="true">⌁</span>
+                <input
+                  id="created-at"
+                  name="createdAt"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="2026-05-21 15:45:49"
+                  aria-describedby="created-help created-error"
+                />
+              </div>
+              <p id="created-help" class="field-help">Wybierz w kalendarzu lub wklej datę w podanym formacie.</p>
+              <p id="created-error" class="field-error" role="alert"></p>
+              <div id="created-calendar" class="calendar-slot" aria-label="Kalendarz utworzenia konta"></div>
+            </section>
+
+            <section class="date-card" aria-labelledby="activity-title">
+              <div class="date-card__heading">
+                <span class="step-mark" aria-hidden="true">II</span>
+                <div>
+                  <p class="date-card__kicker">Ostatni ślad</p>
+                  <h2 id="activity-title">Ostatnia gra</h2>
+                </div>
+              </div>
+              <label for="last-activity-at">Data i godzina ostatniego kliknięcia</label>
+              <div class="date-input-wrap">
+                <span aria-hidden="true">⌁</span>
+                <input
+                  id="last-activity-at"
+                  name="lastActivityAt"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="2026-05-21 15:45:49"
+                  aria-describedby="activity-help activity-error"
+                />
+              </div>
+              <p id="activity-help" class="field-help">Każde kliknięcie w grze rozpoczyna liczenie od nowa.</p>
+              <p id="activity-error" class="field-error" role="alert"></p>
+              <div id="activity-calendar" class="calendar-slot" aria-label="Kalendarz ostatniej aktywności"></div>
+            </section>
+          </div>
+
+          <section id="phase-zero-control" class="phase-zero" hidden>
+            <div>
+              <p class="phase-zero__title">Pierwsza doba konta</p>
+              <p>W fazie 0 los konta zależy od wykonania pierwszej budowy.</p>
+            </div>
+            <label class="switch">
+              <input id="built-in-first-day" type="checkbox" checked />
+              <span class="switch__track" aria-hidden="true"><span></span></span>
+              <span>Wybudowano budynek</span>
+            </label>
+          </section>
+        </form>
+
+        <section class="results" aria-labelledby="results-title">
+          <div class="results__header">
+            <div>
+              <p class="eyebrow">Przewidywana oś czasu</p>
+              <h2 id="results-title">Losy konta</h2>
+            </div>
+            <p class="results__hint">Daty są wyliczane automatycznie</p>
+          </div>
+          <div id="results-content" aria-live="polite" aria-atomic="true">
+            <div class="empty-state">
+              <span class="empty-state__icon" aria-hidden="true">⌛</span>
+              <p>Uzupełnij obie daty, aby odsłonić przewidywaną oś czasu.</p>
+            </div>
+          </div>
+        </section>
+
+        <aside class="rules-note" aria-label="Ważna informacja o wynikach">
+          <span class="rules-note__icon" aria-hidden="true">i</span>
+          <p>
+            Wyniki są estymacją na podstawie opublikowanych faz nieaktywności. Aktywne funkcje premium oraz kolejka serwera mogą opóźnić rzeczywisty transfer.
+            <a href="https://forum.ikariam.gameforge.com/forum/thread/107307-information-about-the-game-s-ghosting-phases/" target="_blank" rel="noreferrer">Zobacz reguły Gameforge</a>.
+          </p>
+        </aside>
+      </main>
+
+      <footer class="site-footer">
+        <span>Ikariam Cemetery Calculator</span>
+        <span>Niezależne narzędzie społecznościowe</span>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

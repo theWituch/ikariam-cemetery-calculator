@@ -1,0 +1,30 @@
+{
+  "name": "ikariam-cemetery-calculator",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "flatpickr": "^4.6.13",
+    "luxon": "^3.7.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "@types/luxon": "^3.6.2",
+    "@types/node": "^24.1.0",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.6",
+    "vitest": "^3.2.4"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true
+  }
+}
