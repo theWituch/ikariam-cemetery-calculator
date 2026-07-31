@@ -26,14 +26,14 @@ test("pokazuje specjalne zachowanie fazy 0", async ({ page }) => {
 });
 
 test("odtwarza konfigurację z URL i obsługuje historię", async ({ page }) => {
-  await page.goto("/?created=2026-01-01+12%3A00%3A00&last=2026-01-06+12%3A00%3A00");
+  await page.goto("/?created=2026-01-01+12-00-00&last=2026-01-06+12-00-00");
 
   await expect(page.locator("#created-at")).toHaveValue("2026-01-01 12:00:00");
   await expect(page.locator("#last-activity-at")).toHaveValue("2026-01-06 12:00:00");
   await expect(page.locator('[data-strategy="last-activity"]')).toContainText("2026-01-08 12:00:00");
 
   await page.locator("#last-activity-at").fill("2026-01-07 12:00:00");
-  await expect.poll(() => new URL(page.url()).searchParams.get("last")).toBe("2026-01-07 12:00:00");
+  await expect.poll(() => new URL(page.url()).searchParams.get("last")).toBe("2026-01-07 12-00-00");
 
   await page.goBack();
   await expect(page.locator("#last-activity-at")).toHaveValue("2026-01-06 12:00:00");
@@ -41,7 +41,7 @@ test("odtwarza konfigurację z URL i obsługuje historię", async ({ page }) => 
 });
 
 test("zapisuje ustawienie pierwszej budowy w adresie", async ({ page }) => {
-  await page.goto("/?created=2026-01-01+12%3A00%3A00&last=2026-01-01+18%3A00%3A00&built=1");
+  await page.goto("/?created=2026-01-01+12-00-00&last=2026-01-01+18-00-00&built=1");
 
   await page.locator("#built-in-first-day").uncheck();
   await expect.poll(() => new URL(page.url()).searchParams.get("built")).toBe("0");

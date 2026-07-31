@@ -14,6 +14,7 @@ import {
   type CalculationResult,
 } from "./calculator";
 import { CALCULATION_MODE, enabledStrategies } from "./config";
+import { formatDateForUrl, parseDateFromUrl } from "./url-state";
 
 const FLATPICKR_FORMAT = "Y-m-d H:i:S";
 const URL_UPDATE_DELAY = 350;
@@ -102,8 +103,8 @@ function pushConfigurationToHistory(): void {
   if (createdAt && lastActivityAt && lastActivityAt.toMillis() < createdAt.toMillis()) return;
 
   const url = new URL(window.location.href);
-  setOrDeleteParameter(url, "created", createdAt ? formatPolishDate(createdAt) : null);
-  setOrDeleteParameter(url, "last", lastActivityAt ? formatPolishDate(lastActivityAt) : null);
+  setOrDeleteParameter(url, "created", createdAt ? formatDateForUrl(createdAt) : null);
+  setOrDeleteParameter(url, "last", lastActivityAt ? formatDateForUrl(lastActivityAt) : null);
 
   if (createdAt && lastActivityAt && isPhaseZeroCandidate(createdAt, lastActivityAt)) {
     url.searchParams.set("built", builtInFirstDay.checked ? "1" : "0");
@@ -139,10 +140,11 @@ function restoreConfigurationFromUrl(): void {
 
 function restoreDateField(input: HTMLInputElement, picker: Instance, value: string): void {
   picker.clear(false);
-  input.value = value;
+  const parsed = parseDateFromUrl(value);
+  input.value = parsed ? formatPolishDate(parsed) : "";
 
-  if (parsePolishDate(value)) {
-    picker.setDate(value, false, FLATPICKR_FORMAT);
+  if (parsed) {
+    picker.setDate(input.value, false, FLATPICKR_FORMAT);
   }
 }
 
