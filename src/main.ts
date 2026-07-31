@@ -16,6 +16,7 @@ import {
 import { CALCULATION_MODE, enabledStrategies } from "./config";
 
 const FLATPICKR_FORMAT = "Y-m-d H:i:S";
+const URL_UPDATE_DELAY = 350;
 
 const form = getElement<HTMLFormElement>("calculator-form");
 const createdInput = getElement<HTMLInputElement>("created-at");
@@ -30,10 +31,14 @@ form.addEventListener("submit", (event) => event.preventDefault());
 
 const createdPicker = createPicker(createdInput, "created-calendar");
 const activityPicker = createPicker(activityInput, "activity-calendar");
+let urlUpdateTimer: number | undefined;
 
 createdInput.addEventListener("input", () => handleTypedDate(createdInput, createdPicker));
 activityInput.addEventListener("input", () => handleTypedDate(activityInput, activityPicker));
-builtInFirstDay.addEventListener("change", render);
+builtInFirstDay.addEventListener("change", userConfigurationChanged);
+window.addEventListener("popstate", restoreConfigurationFromUrl);
+
+restoreConfigurationFromUrl();
 
 function getElement<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
@@ -54,7 +59,7 @@ function createPicker(input: HTMLInputElement, appendToId: string): Instance {
     defaultHour: 12,
     minuteIncrement: 1,
     maxDate: "today",
-    onChange: () => render(),
+    onChange: () => userConfigurationChanged(),
   });
 }
 
@@ -65,7 +70,80 @@ function handleTypedDate(input: HTMLInputElement, picker: Instance): void {
     picker.setDate(input.value, false, FLATPICKR_FORMAT);
   }
 
+  userConfigurationChanged();
+}
+
+function userConfigurationChanged(): void {
   render();
+  scheduleUrlUpdate();
+}
+
+function scheduleUrlUpdate(): void {
+  if (urlUpdateTimer !== undefined) {
+    window.clearTimeout(urlUpdateTimer);
+  }
+
+  urlUpdateTimer = window.setTimeout(() => {
+    urlUpdateTimer = undefined;
+    pushConfigurationToHistory();
+  }, URL_UPDATE_DELAY);
+}
+
+function pushConfigurationToHistory(): void {
+  const createdValue = createdInput.value.trim();
+  const activityValue = activityInput.value.trim();
+  const createdAt = createdValue ? parsePolishDate(createdValue) : null;
+  const lastActivityAt = activityValue ? parsePolishDate(activityValue) : null;
+
+  // Nie zapisujemy przejściowego, niepoprawnego tekstu do udostępnianego adresu.
+  if ((createdValue && !createdAt) || (activityValue && !lastActivityAt)) return;
+  if (createdAt && createdAt.toMillis() > Date.now()) return;
+  if (lastActivityAt && lastActivityAt.toMillis() > Date.now()) return;
+  if (createdAt && lastActivityAt && lastActivityAt.toMillis() < createdAt.toMillis()) return;
+
+  const url = new URL(window.location.href);
+  setOrDeleteParameter(url, "created", createdAt ? formatPolishDate(createdAt) : null);
+  setOrDeleteParameter(url, "last", lastActivityAt ? formatPolishDate(lastActivityAt) : null);
+
+  if (createdAt && lastActivityAt && isPhaseZeroCandidate(createdAt, lastActivityAt)) {
+    url.searchParams.set("built", builtInFirstDay.checked ? "1" : "0");
+  } else {
+    url.searchParams.delete("built");
+  }
+
+  if (url.href !== window.location.href) {
+    window.history.pushState(null, "", url);
+  }
+}
+
+function setOrDeleteParameter(url: URL, name: string, value: string | null): void {
+  if (value === null) {
+    url.searchParams.delete(name);
+  } else {
+    url.searchParams.set(name, value);
+  }
+}
+
+function restoreConfigurationFromUrl(): void {
+  if (urlUpdateTimer !== undefined) {
+    window.clearTimeout(urlUpdateTimer);
+    urlUpdateTimer = undefined;
+  }
+
+  const url = new URL(window.location.href);
+  restoreDateField(createdInput, createdPicker, url.searchParams.get("created") ?? "");
+  restoreDateField(activityInput, activityPicker, url.searchParams.get("last") ?? "");
+  builtInFirstDay.checked = url.searchParams.get("built") !== "0";
+  render();
+}
+
+function restoreDateField(input: HTMLInputElement, picker: Instance, value: string): void {
+  picker.clear(false);
+  input.value = value;
+
+  if (parsePolishDate(value)) {
+    picker.setDate(value, false, FLATPICKR_FORMAT);
+  }
 }
 
 function clearErrors(): void {

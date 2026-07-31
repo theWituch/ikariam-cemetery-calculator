@@ -34,6 +34,16 @@ Aplikacja domyślnie działa w trybie porównawczym i pokazuje dwa wyniki:
 
 Po sprawdzeniu zachowania gry zmień `CALCULATION_MODE` w `src/config.ts` z `"compare"` na `"last-activity"` albo `"inactivity-date"`. Interfejs automatycznie przejdzie na pojedynczy wynik.
 
+## Linki i historia przeglądarki
+
+Poprawne daty są automatycznie zapisywane w parametrach adresu, na przykład:
+
+```text
+?created=2026-01-01+12%3A00%3A00&last=2026-01-06+12%3A00%3A00
+```
+
+Dla fazy 0 adres zawiera również `built=1` lub `built=0`. Taki URL można dodać do zakładek albo udostępnić. Przyciski Wstecz i Dalej odtwarzają wcześniejsze konfiguracje bez przeładowania strony.
+
 ## Wdrożenie na Netlify
 
 1. Umieść projekt w repozytorium GitHub.
