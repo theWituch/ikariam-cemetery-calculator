@@ -59,7 +59,6 @@ function createPicker(input: HTMLInputElement, appendToId: string): Instance {
     dateFormat: FLATPICKR_FORMAT,
     defaultHour: 12,
     minuteIncrement: 1,
-    maxDate: "today",
     onChange: () => userConfigurationChanged(),
   });
 }

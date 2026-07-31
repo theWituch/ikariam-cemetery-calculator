@@ -13,6 +13,23 @@ test("wklejone daty synchronizują kalendarze i pokazują oba warianty", async (
   await expect(page.locator("#activity-calendar .flatpickr-day.selected")).toHaveCount(1);
 });
 
+test("zachowuje zmianę godziny dla bieżącego dnia", async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-07-31T19:30:00Z"));
+  await page.goto("/");
+
+  await page.locator("#created-at").fill("2026-01-01 12:00:00");
+  await page.locator("#last-activity-at").fill("2026-07-31 20:00:00");
+  await page.locator("#activity-calendar .flatpickr-hour").press("ArrowUp");
+
+  await expect(page.locator("#last-activity-at")).toHaveValue("2026-07-31 21:00:00");
+  await expect.poll(() => new URL(page.url()).searchParams.get("last")).toBe("2026-07-31 21-00-00");
+
+  await page.locator("#activity-calendar .flatpickr-hour").press("ArrowUp");
+  await expect(page.locator("#last-activity-at")).toHaveValue("2026-07-31 22:00:00");
+  await expect(page.locator("#activity-error")).toContainText("przyszłości");
+  await expect.poll(() => new URL(page.url()).searchParams.get("last")).toBe("2026-07-31 21-00-00");
+});
+
 test("pokazuje specjalne zachowanie fazy 0", async ({ page }) => {
   await page.goto("/");
 
