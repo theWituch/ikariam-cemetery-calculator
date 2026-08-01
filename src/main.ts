@@ -1,6 +1,7 @@
 import flatpickr from "flatpickr";
 import type { Instance } from "flatpickr/dist/types/instance";
 import { Polish } from "flatpickr/dist/l10n/pl";
+import { DateTime } from "luxon";
 import "flatpickr/dist/flatpickr.min.css";
 import "./styles.css";
 import {
@@ -24,6 +25,8 @@ const createdInput = getElement<HTMLInputElement>("created-at");
 const activityInput = getElement<HTMLInputElement>("last-activity-at");
 const createdError = getElement<HTMLElement>("created-error");
 const activityError = getElement<HTMLElement>("activity-error");
+const createdNowButton = getElement<HTMLButtonElement>("created-now");
+const activityNowButton = getElement<HTMLButtonElement>("activity-now");
 const phaseZeroControl = getElement<HTMLElement>("phase-zero-control");
 const builtInFirstDay = getElement<HTMLInputElement>("built-in-first-day");
 const resultsContent = getElement<HTMLElement>("results-content");
@@ -36,6 +39,8 @@ let urlUpdateTimer: number | undefined;
 
 createdInput.addEventListener("input", () => handleTypedDate(createdInput, createdPicker));
 activityInput.addEventListener("input", () => handleTypedDate(activityInput, activityPicker));
+createdNowButton.addEventListener("click", () => setCurrentDate(createdInput, createdPicker));
+activityNowButton.addEventListener("click", () => setCurrentDate(activityInput, activityPicker));
 builtInFirstDay.addEventListener("change", userConfigurationChanged);
 window.addEventListener("popstate", restoreConfigurationFromUrl);
 
@@ -73,6 +78,13 @@ function handleTypedDate(input: HTMLInputElement, picker: Instance): void {
   userConfigurationChanged();
 }
 
+function setCurrentDate(input: HTMLInputElement, picker: Instance): void {
+  const value = formatPolishDate(DateTime.now().setZone(POLISH_TIME_ZONE));
+  input.value = value;
+  picker.setDate(value, false, FLATPICKR_FORMAT);
+  userConfigurationChanged();
+}
+
 function userConfigurationChanged(): void {
   render();
   scheduleUrlUpdate();
@@ -97,8 +109,6 @@ function pushConfigurationToHistory(): void {
 
   // Nie zapisujemy przejściowego, niepoprawnego tekstu do udostępnianego adresu.
   if ((createdValue && !createdAt) || (activityValue && !lastActivityAt)) return;
-  if (createdAt && createdAt.toMillis() > Date.now()) return;
-  if (lastActivityAt && lastActivityAt.toMillis() > Date.now()) return;
   if (createdAt && lastActivityAt && lastActivityAt.toMillis() < createdAt.toMillis()) return;
 
   const url = new URL(window.location.href);
@@ -198,18 +208,6 @@ function render(): void {
     phaseZeroControl.hidden = true;
     emptyResults("Popraw zaznaczone pola, aby wykonać obliczenie.");
     return;
-  }
-
-  const now = Date.now();
-
-  if (createdAt.toMillis() > now) {
-    showFieldError(createdInput, createdError, "Początek panowania nie może przypadać w przyszłości.");
-    hasError = true;
-  }
-
-  if (lastActivityAt.toMillis() > now) {
-    showFieldError(activityInput, activityError, "Ostatnia gra nie może przypadać w przyszłości.");
-    hasError = true;
   }
 
   if (lastActivityAt.toMillis() < createdAt.toMillis()) {

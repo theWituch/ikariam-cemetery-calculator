@@ -26,8 +26,21 @@ test("zachowuje zmianę godziny dla bieżącego dnia", async ({ page }) => {
 
   await page.locator("#activity-calendar .flatpickr-hour").press("ArrowUp");
   await expect(page.locator("#last-activity-at")).toHaveValue("2026-07-31 22:00:00");
-  await expect(page.locator("#activity-error")).toContainText("przyszłości");
-  await expect.poll(() => new URL(page.url()).searchParams.get("last")).toBe("2026-07-31 21-00-00");
+  await expect(page.locator("#activity-error")).toBeEmpty();
+  await expect.poll(() => new URL(page.url()).searchParams.get("last")).toBe("2026-07-31 22-00-00");
+});
+
+test("przyciski Teraz ustawiają aktualny czas Polski", async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-08-01T10:34:56Z"));
+  await page.goto("/");
+
+  await page.locator("#created-now").click();
+  await page.locator("#activity-now").click();
+
+  await expect(page.locator("#created-at")).toHaveValue("2026-08-01 12:34:56");
+  await expect(page.locator("#last-activity-at")).toHaveValue("2026-08-01 12:34:56");
+  await expect.poll(() => new URL(page.url()).searchParams.get("created")).toBe("2026-08-01 12-34-56");
+  await expect.poll(() => new URL(page.url()).searchParams.get("last")).toBe("2026-08-01 12-34-56");
 });
 
 test("pokazuje specjalne zachowanie fazy 0", async ({ page }) => {

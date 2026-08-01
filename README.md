@@ -44,6 +44,8 @@ Poprawne daty są automatycznie zapisywane w parametrach adresu, na przykład:
 
 Dla fazy 0 adres zawiera również `built=1` lub `built=0`. Taki URL można dodać do zakładek albo udostępnić. Przyciski Wstecz i Dalej odtwarzają wcześniejsze konfiguracje bez przeładowania strony.
 
+Daty mogą wskazywać przyszłość, co pozwala planować cmentarzowanie. Przycisk **Teraz** przy każdym polu wstawia aktualną datę i czas w strefie `Europe/Warsaw`.
+
 ## Wdrożenie na Netlify
 
 1. Umieść projekt w repozytorium GitHub.

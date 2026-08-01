@@ -254,6 +254,7 @@ h1 {
 }
 
 .date-input-wrap input {
+  min-width: 0;
   width: 100%;
   padding: 12px 13px 12px 9px;
   color: #253d45;
@@ -263,6 +264,33 @@ h1 {
   font-family: ui-monospace, "Cascadia Mono", monospace;
   font-size: 0.96rem;
   font-weight: 650;
+}
+
+.now-button {
+  align-self: stretch;
+  flex: 0 0 auto;
+  padding: 0 14px;
+  color: var(--sea-deep);
+  border: 0;
+  border-left: 1px solid #d3c6aa;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, #f6edda, #e9dcc0);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: color 150ms ease, background 150ms ease;
+}
+
+.now-button:hover {
+  color: #fffaf0;
+  background: var(--sea);
+}
+
+.now-button:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid rgba(23, 102, 124, 0.3);
+  outline-offset: -3px;
 }
 
 .date-input-wrap:has(input[aria-invalid="true"]) {
